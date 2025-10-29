@@ -12,7 +12,7 @@ def encode_and_upload():
     )
 
     collection_name = QDRANT_FILE_COLLECTION_NAME
-    input_file = Path(DATA_DIR) / "rs_files.json"
+    input_file = Path(DATA_DIR) / "files.json"
 
     if not input_file.exists():
         raise RuntimeError(f"File {input_file} does not exist. Skipping")

@@ -5,11 +5,16 @@ from qdrant_client.http import models
 
 from code_search.config import QDRANT_URL, QDRANT_API_KEY, QDRANT_FILE_COLLECTION_NAME
 
-class FileGet:
 
+class FileGet:
     def __init__(self):
         self.collection_name = QDRANT_FILE_COLLECTION_NAME
         self.client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+        self.client.create_payload_index(
+            collection_name=QDRANT_FILE_COLLECTION_NAME,
+            field_name="path",
+            field_type="keyword",
+        )
 
     def get(self, path, limit=5) -> List[dict]:
         result = self.client.scroll(
@@ -28,7 +33,7 @@ class FileGet:
         return [hit.payload for hit in result[0]]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     path = "lib/collection/src/collection_manager/optimizers/indexing_optimizer.rs"
 
     searcher = FileGet()

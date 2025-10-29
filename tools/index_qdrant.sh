@@ -2,25 +2,23 @@
 
 set -e
 
-QDRANT_PATH=$1
+REPO_PATH=$1
 
-QDRANT_PATH=$(realpath $QDRANT_PATH)
+REPO_PATH=$(realpath $REPO_PATH)
 
 # Get path to this script
 SCRIPT_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 ROOT_PATH=$SCRIPT_PATH/..
 
 
-python -m code_search.index.files_to_json
+python3 -m code_search.index.files_to_json
 
-python -m code_search.index.file_uploader
+python3 -m code_search.index.file_uploader
 
-rustup run stable rust-analyzer -v lsif $QDRANT_PATH > $ROOT_PATH/data/index.lsif
+python3 -m code_search.index.parser_for_code $REPO_PATH
 
-python -m code_search.index.convert_lsif_index
+python3 -m code_search.index.upload_code
 
-python -m code_search.index.upload_code
+python3 -m code_search.index.parser_for_nl $REPO_PATH
 
-docker run --rm -v $QDRANT_PATH:/source qdrant/rust-parser ./rust_parser /source > $ROOT_PATH/data/structures.json
-
-python -m code_search.index.upload_signatures
+python3 -m code_search.index.upload_signatures
